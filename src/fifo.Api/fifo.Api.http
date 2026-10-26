@@ -1,0 +1,78 @@
+@host = http://localhost:5275
+# Reemplace estos valores solo en su copia local; no suba credenciales reales.
+@adminEmail = admin@example.com
+@adminPassword = REEMPLAZAR_PASSWORD
+@token = PEGAR_TOKEN_DESPUES_DEL_LOGIN
+
+### Login (copiar el token de la respuesta en @token)
+POST {{host}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{adminEmail}}",
+  "password": "{{adminPassword}}"
+}
+
+### Perfil autenticado
+GET {{host}}/api/v1/auth/me
+Authorization: Bearer {{token}}
+
+### Crear categoría (Admin)
+POST {{host}}/api/v1/categorias
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nombre": "Alimentos",
+  "descripcion": "Productos con control por lote",
+  "activo": true
+}
+
+### Crear producto (Admin): reemplazar categoriaId con el Id creado
+POST {{host}}/api/v1/productos
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nombre": "Leche en polvo",
+  "descripcion": "Bolsa de 900 gramos",
+  "categoriaId": 1,
+  "precioUnitario": 12.50,
+  "stockMinimo": 5,
+  "codigoSku": "LECHE-900",
+  "activo": true
+}
+
+### Consultar productos
+GET {{host}}/api/v1/productos
+Authorization: Bearer {{token}}
+
+### Crear lote antiguo (Admin): reemplazar productoId
+POST {{host}}/api/v1/lotes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "productoId": 1,
+  "codigoLote": "LOTE-2026-01",
+  "cantidad": 10,
+  "precioCompra": 8.50,
+  "fechaIngreso": "2026-01-01T00:00:00Z",
+  "fechaVencimiento": "2027-01-01T00:00:00Z"
+}
+
+### Salida FIFO (User o Admin): reemplazar productoId
+POST {{host}}/api/v1/movimientos/salidas
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "productoId": 1,
+  "cantidad": 3,
+  "precioUnitario": 12.50,
+  "observaciones": "Venta mostrador"
+}
+
+### Consultar stock y orden de lotes
+GET {{host}}/api/v1/productos/1/stock
+Authorization: Bearer {{token}}
